@@ -1,0 +1,10 @@
+{
+  "name": "task-managemant",
+  "scripts": {
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:restart": "docker compose down && docker compose up -d",
+    "infra:logs": "docker compose logs -f",
+    "infra:ps": "docker compose ps"
+  }
+}
