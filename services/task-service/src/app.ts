@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, Application } from "express";
+import taskRoutes from "./routes/task.route";
 
 export const app: Application = express();
 
@@ -8,6 +9,8 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
+
+app.use("/api/v1", taskRoutes);
 
 // 404
 app.use((_req: Request, res: Response) => {
