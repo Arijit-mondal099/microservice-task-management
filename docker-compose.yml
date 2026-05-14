@@ -1,17 +1,41 @@
-version: "3.8"
-
 services:
+  user-service:
+    build: ./services/user-service
+    image: user-service:dev
+    container_name: user-service
+    restart: always
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${USER_SERVICE_PORT}
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${USER_SERVICE_DB}?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
   mongodb:
     image: mongodb/mongodb-community-server:8.0-ubi9-slim
     container_name: mongodb
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     ports:
       - "27017:27017"
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "-u", "root", "-p", "password", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping').ok"]
+      test:
+        - "CMD"
+        - "mongosh"
+        - "--quiet"
+        - "-u"
+        - "${MONGO_ROOT_USERNAME}"
+        - "-p"
+        - "${MONGO_ROOT_PASSWORD}"
+        - "--authenticationDatabase"
+        - "admin"
+        - "--eval"
+        - "db.adminCommand('ping').ok"
       interval: 10s
       timeout: 5s
       retries: 5
