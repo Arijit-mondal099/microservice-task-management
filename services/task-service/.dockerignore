@@ -1,0 +1,58 @@
+# Dependencies (re-installed inside image)
+node_modules/
+.pnpm-store/
+
+# Build output (built inside image)
+dist/
+build/
+*.tsbuildinfo
+
+# Environment (inject via runtime, never bake in)
+.env
+.env.local
+.env.*.local
+.env.example
+
+# Tests / coverage
+tests/
+__tests__/
+coverage/
+.nyc_output/
+*.test.ts
+*.spec.ts
+
+# Git / VCS
+.git/
+.gitignore
+.gitattributes
+
+# CI / IDE / editor
+.github/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docs
+README.md
+*.md
+docs/
+
+# Linter / formatter configs (not needed at runtime)
+.eslintcache
+.prettiercache
+.prettierignore
+.prettierrc
+eslint.config.js
+
+# Logs / OS
+logs/
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
