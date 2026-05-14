@@ -14,6 +14,21 @@ services:
       mongodb:
         condition: service_healthy
 
+  task-service:
+    build: ./services/task-service
+    image: task-service:dev
+    container_name: task-service
+    restart: always
+    ports:
+      - "${TASK_SERVICE_PORT}:${TASK_SERVICE_PORT}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${TASK_SERVICE_PORT}
+      - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${TASK_SERVICE_DB}?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
   mongodb:
     image: mongodb/mongodb-community-server:8.0-ubi9-slim
     container_name: mongodb
