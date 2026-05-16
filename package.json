@@ -1,6 +1,10 @@
 {
   "name": "task-managemant",
   "scripts": {
+    "start:dev": "pnpm -r --parallel start:dev",
+    "start":  "pnpm -r --parallel start",
+    "build": "pnpm -r --parallel build",
+    "test": "pnpm -r --parallel test",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
     "infra:restart": "docker compose down && docker compose up -d",
