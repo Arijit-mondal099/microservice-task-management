@@ -25,8 +25,26 @@ services:
       - NODE_ENV=production
       - PORT=${TASK_SERVICE_PORT}
       - MONGODB_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${TASK_SERVICE_DB}?authSource=admin
+      - RABBITMQ_URI=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_PORT}
     depends_on:
       mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  notification-service:
+    build: ./services/notification-service
+    image: notification-service:dev
+    container_name: notification-service
+    restart: always
+    ports:
+      - "${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${NOTIFICATION_SERVICE_PORT}
+      - RABBITMQ_URI=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:${RABBITMQ_PORT}
+    depends_on:
+      rabbitmq:
         condition: service_healthy
 
   mongodb:
@@ -57,5 +75,26 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  rabbitmq:
+    image: rabbitmq:4-management-alpine     # drop -management if you don't need the UI
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "${RABBITMQ_PORT}:${RABBITMQ_PORT}" # AMQP
+      - "15672:15672"                       # Management UI (only with -management)
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
 volumes:
   mongodb_data:
+  rabbitmq_data:
